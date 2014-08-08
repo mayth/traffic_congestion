@@ -13,23 +13,31 @@
   <body>
     <h1>Traffic Congestion Simulation</h1>
 
-    <canvas id="cv" width="400" height="400">
-      Canvas is not supported.
-    </canvas>
+    <div id="info">
+      <p>This simulation program is based on <a href="http://wonderfl.net/c/ptKB">kawamura's "渋滞シミュレーション" (Traffic Congestion Simulation) on wonderfl</a> (implemented with ActionScript).</p>
+      <p>The source code of this program is available on github: <a href="https://github.com/mayth/traffic_congestion">mayth/traffic_congestion</a> It's licensed under the MIT License.</p>
+    </div>
 
-    <table id="cars">
-      <thead>
-        <tr>
-          <th width="250">Position</th>
-          <th width="250">Speed</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-repeat="cars">
-          <td>{{position | fixed 4}}</td>
-          <td>{{speed | fixed 4}}</td>
-        </tr>
-      </tbody>
-    </table>
+    <div id="main">
+      <p>Click on the canvas below to cause an accident.</p>
+      <canvas id="cv" width="400" height="400">
+        Your browser doesn't support Canvas. Please upgrade the browser or use the other one.
+      </canvas>
+
+      <table id="cars">
+        <thead>
+          <tr>
+            <th width="250">Position</th>
+            <th width="250">Speed</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-repeat="cars">
+            <td>{{position | fixed 4}}</td>
+            <td>{{speed | fixed 4}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </body>
 </html>
