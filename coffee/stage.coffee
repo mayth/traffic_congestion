@@ -1,50 +1,58 @@
 class window.Stage
-  _canvas = null
-  _width = 0
-  _height = 0
-  _cx = 0
-  _cy = 0
-  _r = 0
-  _nCars = 0
-  _cars = null
+  @requestAnimationFrame: (callback) ->
+    (window.requestAnimationFrame or
+      window.mozRequestAnimationFrame or
+      window.webkitRequestAnimationFrame or
+      window.msRequestAnimationFrame or
+      (f) -> window.setTimeout(f, 1000 / @fps)
+    )(callback)
 
-  # r: a radius of the stage (in px)
-  # numCars: a number of cars on the stage
-  constructor: (canvas, r, numCars) ->
-    this._canvas = canvas
-    this._width = this._canvas.width
-    this._height = this._canvas.height
-    this._cx = this._width / 2.0
-    this._cy = this._height / 2.0
-    this._r = r
-    this._nCars = numCars
-    this._cars = new Array(this._nCars)
-    for i in [0...this._nCars]
-      this._cars[i] = new Car(0.002, (1.0 / this._nCars) * i)
-    drawCars.call(@)
-    setInterval(this.update, 1000 / 60)
+  startTime: null
+  currentFps: null
+
+  constructor: (@canvas, @numCars = 100, @fps = 60, r = null, cx = null, cy = null) ->
+    @width = @canvas.width
+    @height = @canvas.height
+    @cx = cx || @width / 2.0
+    @cy = cy || @height / 2.0
+    @r = r || (Math.min(@width, @height) * 0.9) / 2.0
+    @cars = new Array(@numCars)
+    d = 1.0 / @numCars
+    for i in [0...@numCars]
+      @cars[i] = new Car(0.002, d * i,
+        collisionThreshold: d * 0.5,
+        acceleration: 0.00005
+      )
+    @canvas.addEventListener('click', this.crash)
     console.log 'finish initialize'
 
-  update: () =>
-    ctx = this._canvas.getContext('2d')
+  run: () =>
+    Stage.requestAnimationFrame(this.update)
+
+  update: (now) =>
+    @draw()
+    for c,i in @cars
+      c.update(@cars[(i + 1) % @numCars])
+    Stage.requestAnimationFrame(this.update)
+
+  draw: () =>
+    ctx = @canvas.getContext('2d')
     ctx.beginPath()
-    ctx.clearRect(0, 0, this._canvas.width, this._canvas.height)
-    for i in [0...this._nCars]
-      this._cars[i].move(this._cars[(i + 1) % this._nCars])
-    drawCars.call(@)
+    ctx.clearRect(0, 0, @canvas.width, @canvas.height)
+    for c in @cars
+      th = c.position * 2 * Math.PI
+      @drawPoint(@cx + @r * Math.cos(th), @cy + @r * Math.sin(th), 2)
+      #x = c.position * @width
+      #@drawPoint(x, @cy, 2)
 
-  ### Properties ###
-  r = () => this._r
-  numCars = () => this._nCars
+  crash: () =>
+    tgt = Math.floor(Math.random() * (@numCars - 1))
+    @cars[tgt].crash()
+    console.log "crashed #{tgt}"
+    tgt
 
-  drawCars = () ->
-    for c in this._cars
-      th = c.position() * 2 * Math.PI
-      drawPoint.call(@,
-        this._cx + this._r * Math.cos(th), this._cy + this._r * Math.sin(th), 2)
-
-  drawPoint = (x, y, r) ->
-    ctx = this._canvas.getContext('2d')
+  drawPoint: (x, y, r) =>
+    ctx = @canvas.getContext('2d')
     ctx.beginPath()
     ctx.arc(x, y, r, 0, Math.PI * 2, false)
     ctx.fill()

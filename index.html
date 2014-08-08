@@ -2,12 +2,31 @@
 <html>
   <head>
     <title>Traffic Congestion Simulation</title>
+    <script src="lib/vue/vue.js"></script>
     <script src="Resources/car.js"></script>
     <script src="Resources/stage.js"></script>
     <script src="Resources/main.js"></script>
   </head>
   <body>
     <h1>Traffic Congestion Simulation</h1>
-    <canvas id="cv" width="400" height="400" />
+
+    <canvas id="cv" width="400" height="400">
+      Canvas is not supported.
+    </canvas>
+
+    <table id="cars">
+      <thead>
+        <tr>
+          <th width="250">Position</th>
+          <th width="250">Speed</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-repeat="cars">
+          <td>{{position}}</td>
+          <td>{{speed}}</td>
+        </tr>
+      </tbody>
+    </table>
   </body>
 </html>

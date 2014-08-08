@@ -1,5 +1,10 @@
-main = () ->
-  console.log 'hello, world'
-  stage = new Stage(document.getElementById('cv'), 150, 50)
+document.addEventListener('DOMContentLoaded', () ->
+  stage = new Stage(document.getElementById('cv'), 100)
 
-document.addEventListener("DOMContentLoaded", main)
+  cars = new Vue
+    el: '#cars'
+    data:
+      cars: stage.cars
+
+  stage.run()
+)

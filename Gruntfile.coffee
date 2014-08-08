@@ -13,7 +13,12 @@ module.exports = (grunt) ->
           dest: 'Resources/'
           ext: '.js'
         ]
+    bower:
+      install:
+        options:
+          targetDir: './lib'
 
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-watch'
+  grunt.loadNpmTasks 'grunt-bower-task'
   grunt.registerTask 'default', ['watch']
