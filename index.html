@@ -6,6 +6,9 @@
     <script src="Resources/car.js"></script>
     <script src="Resources/stage.js"></script>
     <script src="Resources/main.js"></script>
+    <style>
+      #cv { border: solid black thin; }
+    </style>
   </head>
   <body>
     <h1>Traffic Congestion Simulation</h1>
@@ -23,8 +26,8 @@
       </thead>
       <tbody>
         <tr v-repeat="cars">
-          <td>{{position}}</td>
-          <td>{{speed}}</td>
+          <td>{{position | fixed 4}}</td>
+          <td>{{speed | fixed 4}}</td>
         </tr>
       </tbody>
     </table>
