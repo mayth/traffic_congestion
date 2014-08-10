@@ -1,0 +1,11 @@
+#layout {
+  padding: 0;
+}
+
+#main {
+  text-align: center;
+}
+
+#cv {
+  border: solid black thin;
+}

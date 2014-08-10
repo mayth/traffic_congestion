@@ -8,35 +8,46 @@ class window.Stage
     )(callback)
 
   CAR_SIZE = 2
-  TARGET_SPEED = 0.002
 
   startTime: null
   currentFps: null
+  isRunning: false
 
-  constructor: (@canvas, @numCars = 100, @fps = 60, r = null, cx = null, cy = null) ->
-    @width = @canvas.width
-    @height = @canvas.height
-    @cx = cx || @width / 2.0
-    @cy = cy || @height / 2.0
-    @r = r || (Math.min(@width, @height) * 0.9) / 2.0
+  generateCanvas: (width, height) ->
+    @canvas = document.createElement('canvas')
+    @canvas.width = @width
+    @canvas.height = @height
+    unsupportedText = document.createTextNode('Your browser doesn\'t support Canvas. Please upgrade the browser or use the other one.')
+    @canvas.appendChild(unsupportedText)
+
+  constructor: (@width, @height, opts = {}) ->
+    @numCars = opts['numCars'] || 100
+    @fps = opts['fps'] || 60
+    @cx = opts['cx'] || @width / 2.0
+    @cy = opts['cy'] || @height / 2.0
+    @r = opts['r'] || (Math.min(@width, @height) * 0.9) / 2.0
+    @targetSpeed = opts['targetSpeed'] || 0.002
     @cars = new Array(@numCars)
+    @generateCanvas(@width, @height)
+    @canvas.addEventListener('click', this.crash)
+    @init()
+    console.log 'finish initialize'
+
+  init: =>
     d = 1.0 / @numCars
+    @cars = new Array(@numCars)
     for i in [0...@numCars]
-      @cars[i] = new Car(TARGET_SPEED, d * i,
+      @cars[i] = new Car(@targetSpeed, d * i,
         collisionThreshold: d * 0.5,
         acceleration: 0.00005
       )
-    @canvas.addEventListener('click', this.crash)
-    console.log 'finish initialize'
-
-  run: () =>
-    Stage.requestAnimationFrame(this.update)
 
   update: (now) =>
     @draw()
     for c,i in @cars
       c.update(@cars[(i + 1) % @numCars])
-    Stage.requestAnimationFrame(this.update)
+    if @isRunning
+      Stage.requestAnimationFrame(this.update)
 
   draw: () =>
     ctx = @canvas.getContext('2d')
@@ -45,8 +56,15 @@ class window.Stage
     # @drawRoad()
     for c in @cars
       th = c.position * 2 * Math.PI
-      col = { r: if (c.speed - TARGET_SPEED) < 0 then 255 else 0 }
+      col = { r: if (c.speed - @targetSpeed) < 0 then 255 else 0 }
       @drawPoint(@cx + @r * Math.cos(th), @cy + @r * Math.sin(th), CAR_SIZE, col)
+
+  start: () =>
+    @isRunning = true
+    Stage.requestAnimationFrame(this.update)
+
+  stop: () =>
+    @isRunning = false
 
   crash: () =>
     tgt = Math.floor(Math.random() * (@numCars - 1))
